@@ -16,7 +16,6 @@ public sealed class HolosignSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-        SubscribeLocalEvent<HolosignProjectorComponent, BeforeRangedInteractEvent>(OnBeforeInteract);
         SubscribeLocalEvent<HolosignProjectorComponent, ExaminedEvent>(OnExamine);
     }
 
@@ -42,11 +41,7 @@ public sealed class HolosignSystem : EntitySystem
     private void OnBeforeInteract(EntityUid uid, HolosignProjectorComponent component, BeforeRangedInteractEvent args)
     {
 
-        if (args.Handled
-            || !args.CanReach // prevent placing out of range
-            || HasComp<StorageComponent>(args.Target) // if it's a storage component like a bag, we ignore usage so it can be stored
-            || !_powerCell.TryUseCharge(uid, component.ChargeUse, user: args.User) // if no battery or no charge, doesn't work
-            )
+        if (!_powerCell.TryUseCharge(uid, component.ChargeUse, user: args.User)) // if no battery or no charge, doesn't work)
             return;
 
         // places the holographic sign at the click location, snapped to grid.
