@@ -24,7 +24,7 @@ public sealed partial class HolosignProjectorComponent : Component
     ///     Current mode of the component owner.
     /// </summary>
     [ViewVariables]
-    public HolosignModes CurrentRegime = HolosignModes.Placing;
+    public HolosignModes CurrentMod = HolosignModes.Placing;
 }
 
 public enum HolosignModes : byte
