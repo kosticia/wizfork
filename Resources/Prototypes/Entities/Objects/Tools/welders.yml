@@ -239,7 +239,7 @@
 - type: entity
   parent: BaseWelder
   id: AirlockWelder
-  name: airlock welder
+  name: airlock welding tool
   description: "Slow welder created for welding and unwelding airlocks. Additional thermal protection makes this welder useable in plasma and tritium atmosphere."
   components:
   # tooling
