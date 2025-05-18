@@ -1,14 +1,12 @@
 - type: entity
-  name: welding tool
+  abstract: true
   parent: BaseItem
-  id: Welder
-  description: "Melts anything as long as it's fueled, don't forget your eye protection!"
+  id: BaseWelder
   components:
   - type: EmitSoundOnLand
     sound:
       path: /Audio/Items/welder_drop.ogg
   - type: Sprite
-    sprite: Objects/Tools/welder.rsi
     layers:
     - state: icon
     - state: welder_flame
@@ -54,7 +52,6 @@
             Heat: 8
   - type: ItemToggleSize
     activatedSize: Large
-  - type: ItemToggleHot
   - type: ComponentToggler
     components:
     - type: DisarmMalus
@@ -103,8 +100,24 @@
       Steel: 200
   - type: StaticPrice
     price: 40
+
+- type: entity
+  abstract: true
+  parent: BaseWelder
+  id: BaseIgnitionWelder
+  components:
+  - type: ItemToggleHot
   - type: IgnitionSource
     temperature: 700
+
+- type: entity
+  name: welding tool
+  parent: BaseIgnitionWelder
+  id: Welder
+  description: "Melts anything as long as it's fueled, don't forget your eye protection!"
+  components:
+  - type: Sprite
+    sprite: Objects/Tools/welder.rsi
 
 - type: entity
   name: industrial welding tool
@@ -218,3 +231,30 @@
       reagents:
       - ReagentId: WeldingFuel
         Quantity: 0.1
+
+# ATMOS CONTENTNATION!!!
+# Added as analog of atmos door remotes that was removed in https://github.com/space-wizards/space-station-14/pull/28330
+# Bro was removed because he is literally CE door remote.
+
+- type: entity
+  parent: BaseWelder
+  id: AirlockWelder
+  name: airlock welder
+  description: "Slow welder created for welding and unwelding airlocks. Additional thermal protection makes this welder useable in plasma and tritium atmosphere."
+  components:
+  # tooling
+  - type: Tool
+    speedModifier: 0.2 # x5 slower than base welder.
+    tagSpeedModifiers:
+      Airlock : 3 # x3 more cool than base welder when welding airlocks.
+      GlassAirlock : 3
+      HighSecDoor : 2 # less cool because high-sec
+      Firelock : 5 # super cool 😎😎😎😎
+  # sprite
+  - type: Sprite
+    sprite: Objects/Tools/welder_airlock.rsi # sprites kinda suck
+  - type: PointLight
+    radius: 0.5
+    color: blue
+
+# ATMOS CONTENTNATION END!!!

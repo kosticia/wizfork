@@ -13,6 +13,7 @@ using Robust.Shared.Map;
 using Robust.Shared.Prototypes;
 using Robust.Shared.Serialization;
 using Robust.Shared.Utility;
+using Content.Shared.Tag;
 
 namespace Content.Shared.Tools.Systems;
 
@@ -32,6 +33,7 @@ public abstract partial class SharedToolSystem : EntitySystem
     [Dependency] private   readonly SharedTransformSystem _transformSystem = default!;
     [Dependency] private   readonly TileSystem _tiles = default!;
     [Dependency] private   readonly TurfSystem _turfs = default!;
+    [Dependency] private   readonly TagSystem _tag = default!;
 
     public const string CutQuality = "Cutting";
     public const string PulseQuality = "Pulsing";
@@ -166,8 +168,22 @@ public abstract partial class SharedToolSystem : EntitySystem
         if (!CanStartToolUse(tool, user, target, fuel, toolQualitiesNeeded, toolComponent))
             return false;
 
+        var speedModifier = toolComponent.SpeedModifier;
+
+        if (toolComponent.TagSpeedModifiers is not null)
+        {
+            foreach (var modifier in toolComponent.TagSpeedModifiers)
+            {
+                if (_tag.HasTag(target!.Value, modifier.Key))
+                {
+                    speedModifier = modifier.Value;
+                    break;
+                }
+            }
+        }
+
         var toolEvent = new ToolDoAfterEvent(fuel, doAfterEv, GetNetEntity(target));
-        var doAfterArgs = new DoAfterArgs(EntityManager, user, delay / toolComponent.SpeedModifier, toolEvent, tool, target: target, used: tool)
+        var doAfterArgs = new DoAfterArgs(EntityManager, user, delay / speedModifier, toolEvent, tool, target: target, used: tool)
         {
             BreakOnDamage = true,
             BreakOnMove = true,
