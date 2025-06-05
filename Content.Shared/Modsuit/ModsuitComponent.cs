@@ -8,6 +8,9 @@ public sealed partial class ModsuitComponent : Component
     [DataField]
     public List<EntityUid> Modules = [];
 
+    [ViewVariables]
+    public List<EntityUid> StoredActions = [];
+
     [DataField]
     public List<EntProtoId> StartingModules = [];
 

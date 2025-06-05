@@ -4,8 +4,8 @@ namespace Content.Shared.Modsuit;
 public sealed partial class ModsuitActionComponent : Component
 {
     [DataField]
-    public float PassiveDrain = 5;
-
-    [DataField]
     public float ActiveDrain = 10;
+
+    [ViewVariables]
+    public EntityUid Modsuit;
 }

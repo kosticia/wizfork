@@ -63,11 +63,13 @@
 
 - type: entity
   parent: DrinkGlassBase
-  id: GOIDAMODULE
+  id: GOIDAMODULEggggggggoal
   name: meth  # beer it is. coffee. beer? coff-ee? be-er? c-o... b-e
   description: Just a whole glass of meth.
-  suffix: DEBUG
+  suffix: DEBUG REAL ONE
   components:
   - type: Sprite
     sprite: Objects/Consumable/Drinks/beer.rsi
   - type: ModsuitModule
+    providedActions:
+    - ActionConfigureMeleeSpeech

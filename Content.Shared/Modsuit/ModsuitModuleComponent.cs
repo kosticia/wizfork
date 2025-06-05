@@ -9,10 +9,10 @@ public sealed partial class ModsuitModuleComponent : Component
     public float PassiveDrain = 5;
 
     [DataField]
-    public float ActiveDrain = 10;
+    public List<EntProtoId> ProvidedActions = [];
 
     [DataField]
-    public List<EntProtoId> ProvidedActions = [];
+    public List<EntityUid> StoredActions = [];
 
     [DataField]
     public List<Component> ProvidedComponents = [];
