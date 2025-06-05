@@ -1,0 +1,73 @@
+- type: entity
+  parent: ClothingOuterBase
+  id: adminmodsuit
+  name: experemental modsuit "GOIDA"
+  description: A special suit that protects against hazardous, low pressure environments. Has thermal shielding.
+  suffix: DEBUG
+  components:
+  - type: Sprite
+    sprite: Clothing/OuterClothing/Hardsuits/atmospherics.rsi
+  - type: Clothing
+    sprite: Clothing/OuterClothing/Hardsuits/atmospherics.rsi
+  - type: PressureProtection
+    highPressureMultiplier: 0.02
+    lowPressureMultiplier: 1000
+  - type: TemperatureProtection
+    heatingCoefficient: 0.001
+    coolingCoefficient: 0.001
+  - type: FireProtection
+    reduction: 0.8
+  - type: ExplosionResistance
+    damageCoefficient: 0.5
+  - type: Armor
+    modifiers:
+      coefficients:
+        Blunt: 0.9
+        Slash: 0.9
+        Piercing: 0.9
+        Heat: 0.8
+        Radiation: 0.5
+  - type: ClothingSpeedModifier
+    walkModifier: 0.7
+    sprintModifier: 0.7
+  - type: HeldSpeedModifier
+  - type: ToggleableClothing
+    clothingPrototype: ClothingHeadHelmetHardsuitAtmos
+  - type: Modsuit
+    startingModules:
+    - GOIDAMODULE
+  - type: ContainerContainer
+    containers:
+      ModsuitModuleContainer: !type:Container
+
+- type: entity
+  parent: adminmodsuit
+  id: adminmodsuitempt
+  name: experemental modsuit "GOIDA"
+  description: A special suit that protects against hazardous, low pressure environments. Has thermal shielding.
+  suffix: DEBUG, empty
+  components:
+  - type: Modsuit
+    startingModules: []
+
+- type: entity
+  parent: DrinkGlassBase
+  id: GOIDAMODULE
+  name: meth  # beer it is. coffee. beer? coff-ee? be-er? c-o... b-e
+  description: Just a whole glass of meth.
+  suffix: DEBUG
+  components:
+  - type: Sprite
+    sprite: Objects/Consumable/Drinks/beer.rsi
+  - type: ModsuitModule
+
+- type: entity
+  parent: DrinkGlassBase
+  id: GOIDAMODULE
+  name: meth  # beer it is. coffee. beer? coff-ee? be-er? c-o... b-e
+  description: Just a whole glass of meth.
+  suffix: DEBUG
+  components:
+  - type: Sprite
+    sprite: Objects/Consumable/Drinks/beer.rsi
+  - type: ModsuitModule
