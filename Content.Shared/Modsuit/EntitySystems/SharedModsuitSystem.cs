@@ -59,7 +59,10 @@ public abstract class SharedModsuitSystem : EntitySystem
             _actionSystem.TransferAction(action, ent);
     }
 
-    public bool TryInsertModule(Entity<ModsuitModuleComponent?> module, Entity<ModsuitComponent?> target, EntityUid? user = null, ContainerManagerComponent? containerComp = null)
+    public bool TryInsertModule(Entity<ModsuitModuleComponent?> module,
+        Entity<ModsuitComponent?> target,
+        EntityUid? user = null,
+        ContainerManagerComponent? containerComp = null)
     {
         if (!Resolve(target, ref target.Comp) || !Resolve(module, ref module.Comp))
             return false;
@@ -104,7 +107,10 @@ public abstract class SharedModsuitSystem : EntitySystem
         return false;
     }
 
-    private bool TryDrawModule(Entity<ModsuitModuleComponent?> module, Entity<ModsuitComponent?> target, EntityUid? user = null, ContainerManagerComponent? containerComp = null)
+    public bool TryDrawModule(Entity<ModsuitModuleComponent?> module,
+        Entity<ModsuitComponent?> target,
+        EntityUid? user = null,
+        ContainerManagerComponent? containerComp = null)
     {
         if (!Resolve(target, ref target.Comp) || !Resolve(module, ref module.Comp))
             return false;
@@ -117,6 +123,12 @@ public abstract class SharedModsuitSystem : EntitySystem
 
             if (user is not null)
                 _hands.TryPickupAnyHand(target, user.Value);
+
+            foreach (var action in module.Comp.StoredActions)
+            {
+                _actionSystem.TransferAction(action, module);
+                target.Comp.StoredActions.Remove(action);
+            }
         }
         return true;
     }

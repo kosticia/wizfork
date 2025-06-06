@@ -39,6 +39,12 @@
   - type: ContainerContainer
     containers:
       ModsuitModuleContainer: !type:Container
+  - type: UserInterface
+    interfaces:
+      enum.ModsuitUiKey.Key:
+        type: ModsuitBoundUserInterface
+  - type: ActivatableUI
+    key: enum.ModsuitUiKey.Key
 
 - type: entity
   parent: adminmodsuit
