@@ -32,13 +32,6 @@
                 </BoxContainer>
             </PanelContainer>
 
-            <customControls:HSeparator Margin="0 10 0 10"/>
-
-            <BoxContainer Orientation="Horizontal">
-                <LineEdit Name="NameLineEdit" HorizontalExpand="True"/>
-                <Label Name="NameIdentifierLabel" Margin="10 0 0 0"/>
-            </BoxContainer>
-
             <Control MinHeight="10"/>
 
             <Button HorizontalExpand="True" Name="BrainButton" ToggleMode="False" Margin="0" MinHeight="40" StyleClasses="OpenLeft">

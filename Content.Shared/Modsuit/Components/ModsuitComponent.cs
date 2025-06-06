@@ -1,21 +1,22 @@
 using Robust.Shared.Prototypes;
+using Robust.Shared.Containers;
 
 namespace Content.Shared.Modsuit;
 
 [RegisterComponent]
 public sealed partial class ModsuitComponent : Component
 {
+    [ViewVariables]
+    public Container ModuleContainer;
+
     [DataField]
-    public List<EntityUid> Modules = [];
+    public string ModuleContainerName = "ModsuitModuleContainer";
 
     [ViewVariables]
     public List<EntityUid> StoredActions = [];
 
     [DataField]
     public List<EntProtoId> StartingModules = [];
-
-    [DataField]
-    public string ModuleContainer = "ModsuitModuleContainer";
 
     /// <summary>
     ///     Maximum amount of modules in modsuit. Leave null for unlimited amount.
