@@ -1,8 +1,10 @@
-using Content.Shared.Silicons.Borgs;
+using Content.Shared.Modsuit.Ui;
 using JetBrains.Annotations;
 using Robust.Client.UserInterface;
 
 namespace Content.Client.Modsuit;
+
+#pragma warning disable IDE0290
 
 [UsedImplicitly]
 public sealed class ModsuitBoundUserInterface : BoundUserInterface
@@ -21,24 +23,14 @@ public sealed class ModsuitBoundUserInterface : BoundUserInterface
         _menu = this.CreateWindow<ModsuitMenu>();
         _menu.SetEntity(Owner);
 
-        _menu.BrainButtonPressed += () =>
-        {
-            SendMessage(new BorgEjectBrainBuiMessage());
-        };
-
         _menu.EjectBatteryButtonPressed += () =>
         {
-            SendMessage(new BorgEjectBatteryBuiMessage());
-        };
-
-        _menu.NameChanged += name =>
-        {
-            SendMessage(new BorgSetNameBuiMessage(name));
+            SendMessage(new ModsuitEjectBatteryBuiMessage());
         };
 
         _menu.RemoveModuleButtonPressed += module =>
         {
-            SendMessage(new BorgRemoveModuleBuiMessage(EntMan.GetNetEntity(module)));
+            SendMessage(new ModsuitRemoveModuleBuiMessage(EntMan.GetNetEntity(module)));
         };
     }
 
@@ -46,7 +38,7 @@ public sealed class ModsuitBoundUserInterface : BoundUserInterface
     {
         base.UpdateState(state);
 
-        if (state is not BorgBuiState msg)
+        if (state is not ModsuitBuiState msg)
             return;
         _menu?.UpdateState(msg);
     }

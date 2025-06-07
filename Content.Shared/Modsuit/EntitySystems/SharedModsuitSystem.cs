@@ -4,6 +4,7 @@ using Content.Shared.Popups;
 using Content.Shared.Actions;
 using Content.Shared.Clothing;
 using Content.Shared.Hands.EntitySystems;
+using Content.Shared.Modsuit.Components;
 
 namespace Content.Shared.Modsuit.EntitySystems;
 
@@ -69,9 +70,7 @@ public abstract class SharedModsuitSystem : EntitySystem
 
         var container = target.Comp.ModuleContainer;
 
-        // Inserts module only if max cap of modules is limited and there is avaible space.
-        if (target.Comp.MaxModuleCount is not null && container.ContainedEntities.Count < target.Comp.MaxModuleCount
-            || target.Comp.MaxModuleCount is null)
+        if (container.ContainedEntities.Count < target.Comp.MaxModuleCount)
         {
             foreach (var contModule in container.ContainedEntities)
             {

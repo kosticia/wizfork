@@ -1,7 +1,7 @@
 using Robust.Shared.Prototypes;
 using Robust.Shared.Containers;
 
-namespace Content.Shared.Modsuit;
+namespace Content.Shared.Modsuit.Components;
 
 [RegisterComponent]
 public sealed partial class ModsuitComponent : Component
@@ -22,7 +22,7 @@ public sealed partial class ModsuitComponent : Component
     ///     Maximum amount of modules in modsuit. Leave null for unlimited amount.
     /// </summary>
     [DataField]
-    public int? MaxModuleCount = 6;
+    public int MaxModuleCount = 6;
 
     [DataField]
     public float PassiveDrain = 5;

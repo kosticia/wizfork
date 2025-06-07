@@ -1,4 +1,4 @@
-namespace Content.Shared.Modsuit;
+namespace Content.Shared.Modsuit.Components;
 
 [RegisterComponent]
 public sealed partial class ModsuitActionComponent : Component
