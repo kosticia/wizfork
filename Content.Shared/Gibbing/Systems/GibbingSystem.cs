@@ -2,12 +2,14 @@
 using System.Numerics;
 using Content.Shared.Gibbing.Components;
 using Content.Shared.Gibbing.Events;
+using Content.Shared.Random.Helpers;
 using Robust.Shared.Audio.Systems;
 using Robust.Shared.Containers;
 using Robust.Shared.Map;
 using Robust.Shared.Physics.Systems;
 using Robust.Shared.Prototypes;
 using Robust.Shared.Random;
+using Robust.Shared.Timing;
 
 namespace Content.Shared.Gibbing.Systems;
 
@@ -17,7 +19,7 @@ public sealed class GibbingSystem : EntitySystem
     [Dependency] private readonly SharedTransformSystem _transformSystem = default!;
     [Dependency] private readonly SharedAudioSystem _audioSystem = default!;
     [Dependency] private readonly SharedPhysicsSystem _physicsSystem = default!;
-    [Dependency] private readonly IRobustRandom _random = default!;
+    [Dependency] private readonly IGameTiming _timing = default!;
 
     //TODO: (future optimization) implement a system that "caps" giblet entities by deleting the oldest ones once we reach a certain limit, customizable via CVAR
 
@@ -216,8 +218,10 @@ public sealed class GibbingSystem : EntitySystem
                 return;
         }
 
+        var seed = SharedRandomExtensions.HashCodeCombine(new() { (int)_timing.CurTick.Value, GetNetEntity(gibbable).Id });
+        var rand = new System.Random(seed);
         _transformSystem.DropNextTo(gibbable.Owner, parent);
-        _transformSystem.SetWorldRotation(gibbable, _random.NextAngle());
+        _transformSystem.SetWorldRotation(gibbable, rand.NextAngle());
         droppedEntities.Add(gibbable);
         if (flingEntity)
         {
@@ -320,25 +324,31 @@ public sealed class GibbingSystem : EntitySystem
     private void FlingDroppedEntity(EntityUid target, Vector2? direction, float impulse, float impulseVariance,
         Angle scatterConeAngle)
     {
-        var scatterAngle = direction?.ToAngle() ?? _random.NextAngle();
-        var scatterVector = _random.NextAngle(scatterAngle - scatterConeAngle / 2, scatterAngle + scatterConeAngle / 2)
-            .ToVec() * (impulse + _random.NextFloat(impulseVariance));
+        var seed = SharedRandomExtensions.HashCodeCombine(new() { (int)_timing.CurTick.Value, GetNetEntity(target).Id });
+        var rand = new System.Random(seed);
+        var scatterAngle = direction?.ToAngle() ?? rand.NextAngle();
+        var scatterVector = (scatterAngle - scatterConeAngle / 2).ToVec();
+        if (impulseVariance != 0)
+            scatterVector *= impulse + rand.NextFloat(0, impulseVariance);
+
         _physicsSystem.ApplyLinearImpulse(target, scatterVector);
     }
 
     private bool TryCreateRandomGiblet(GibbableComponent gibbable, EntityCoordinates coords,
         bool playSound, [NotNullWhen(true)] out EntityUid? gibletEntity, float? randomSpreadModifier = null)
     {
+        var seed = SharedRandomExtensions.HashCodeCombine(new() { (int)_timing.CurTick.Value, (int)(coords.X + coords.Y) });
+        var rand = new System.Random(seed);
         gibletEntity = null;
         if (gibbable.GibPrototypes.Count == 0)
             return false;
-        gibletEntity = Spawn(gibbable.GibPrototypes[_random.Next(0, gibbable.GibPrototypes.Count)],
+        gibletEntity = Spawn(gibbable.GibPrototypes[rand.Next(0, gibbable.GibPrototypes.Count)],
             randomSpreadModifier == null
                 ? coords
-                : coords.Offset(_random.NextVector2(gibbable.GibScatterRange * randomSpreadModifier.Value)));
+                : coords.Offset(rand.NextPolarVector2(0, gibbable.GibScatterRange * randomSpreadModifier.Value)));
         if (playSound)
             _audioSystem.PlayPredicted(gibbable.GibSound, coords, null);
-        _transformSystem.SetWorldRotation(gibletEntity.Value, _random.NextAngle());
+        _transformSystem.SetWorldRotation(gibletEntity.Value, rand.NextAngle());
         return true;
     }
 }
