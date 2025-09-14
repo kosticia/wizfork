@@ -1,8 +1,15 @@
-using using Content.Shared.Inventory;
+using Robust.Shared.GameStates;
+using Content.Shared.Thermals.Systems;
+using Robust.Shared.Prototypes;
 
 namespace Content.Shared.Thermals.Components;
 
-[RegisterComponent]
+[RegisterComponent, NetworkedComponent, Access(typeof(ThermalsSystem))]
 public sealed partial class ThermalVisionGrantComponent : Component
 {
+    [DataField]
+    public EntProtoId ActionProto = "ThermalVisionToggleAction";
+
+    [ViewVariables]
+    public EntityUid ActionEntity;
 }

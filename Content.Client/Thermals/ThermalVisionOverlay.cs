@@ -7,6 +7,7 @@ using Content.Shared.Eye.Blinding;
 using Content.Shared.Eye.Blinding.Components;
 using Content.Shared.Movement.Components;
 using Content.Shared.Movement.Systems;
+using Content.Shared.Thermals.Components;
 
 namespace Content.Client.Thermals;
 
@@ -27,7 +28,7 @@ public sealed class ThermalVisionOverlay : Overlay
 
     private BlindableComponent _blindableComponent = default!;
 
-    public BlindOverlay()
+    public ThermalVisionOverlay()
     {
         IoCManager.InjectDependencies(this);
         _greyscaleShader = _prototypeManager.Index(GreyscaleShader).InstanceUnique();
@@ -84,9 +85,9 @@ public sealed class ThermalVisionOverlay : Overlay
             _blindableComponent.GraceFrame = false;
         }
 
-        if (_entityManager.TryGetComponent<EyeComponent>(playerEntity, out var content))
+        if (_entityManager.TryGetComponent<ThermalVisionComponent>(playerEntity, out var comp))
         {
-            _circleMaskShader?.SetParameter("Zoom", content.Zoom.X);
+            _thermalShader?.SetParameter("Zoom", comp.Zoom.X);
         }
 
         _greyscaleShader?.SetParameter("SCREEN_TEXTURE", ScreenTexture);
@@ -95,7 +96,7 @@ public sealed class ThermalVisionOverlay : Overlay
         var viewport = args.WorldBounds;
         worldHandle.UseShader(_greyscaleShader);
         worldHandle.DrawRect(viewport, Color.White);
-        worldHandle.UseShader(_circleMaskShader);
+        worldHandle.UseShader(_thermalShader);
         worldHandle.DrawRect(viewport, Color.White);
         worldHandle.UseShader(null);
     }

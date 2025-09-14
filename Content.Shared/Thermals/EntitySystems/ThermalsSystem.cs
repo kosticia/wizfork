@@ -1,11 +1,16 @@
-using Content.Shared.Clothing.Components;
-using Content.Shared.Gravity;
-using Content.Shared.Inventory;
-using Content.Shared.Standing;
+using Content.Shared.Thermals.Components;
 
 namespace Content.Shared.Thermals.Systems;
 
-public sealed partial class ThermalsSystems : EntitySystem
+public sealed partial class ThermalsSystem : EntitySystem
 {
+    public override void Initialize()
+    {
+        SubscribeLocalEvent<ThermalVisionComponent, ComponentInit>(OnCompInit);
+    }
 
+    public void OnCompInit(Entity<ThermalVisionComponent> ent, ref ComponentInit args)
+    {
+
+    }
 }
