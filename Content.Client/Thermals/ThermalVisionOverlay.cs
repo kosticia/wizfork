@@ -8,6 +8,21 @@ using Content.Shared.Eye.Blinding.Components;
 using Content.Shared.Movement.Components;
 using Content.Shared.Movement.Systems;
 using Content.Shared.Thermals.Components;
+using System.Numerics;
+using Content.Client.StatusIcon;
+using Content.Client.UserInterface.Systems;
+using Content.Shared.Damage;
+using Content.Shared.FixedPoint;
+using Content.Shared.Mobs;
+using Content.Shared.Mobs.Components;
+using Content.Shared.Mobs.Systems;
+using Content.Shared.StatusIcon;
+using Content.Shared.StatusIcon.Components;
+using Robust.Client.GameObjects;
+using Robust.Client.Graphics;
+using Robust.Shared.Enums;
+using Robust.Shared.Prototypes;
+using static Robust.Shared.Maths.Color;
 
 namespace Content.Client.Thermals;
 
@@ -66,12 +81,18 @@ public sealed class ThermalVisionOverlay : Overlay
         if (playerEntity is null)
             return;
 
-        var query = _entMan.AllEntityQueryEnumerator<MobThresholdsComponent, MobStateComponent, DamageableComponent, SpriteComponent>();
+        var handle = args.WorldHandle;
+        var rotation = args.Viewport.Eye?.Rotation ?? Angle.Zero;
+        var xformQuery = _entMan.GetEntityQuery<TransformComponent>();
+
+        const float scale = 1f;
+        var scaleMatrix = Matrix3Helpers.CreateScale(new Vector2(scale, scale));
+        var rotationMatrix = Matrix3Helpers.CreateRotation(-rotation);
+
+        var query = _entMan.AllEntityQueryEnumerator<TemperatureComponent, SpriteComponent>();
         while (query.MoveNext(out var uid,
-            out var mobThresholdsComponent,
-            out var mobStateComponent,
-            out var damageableComponent,
-            out var spriteComponent))
+            out var tempComp,
+            out var spriteComp))
         {
             if (statusIcon != null && !_statusIconSystem.IsVisible((uid, _entMan.GetComponent<MetaDataComponent>(uid)), statusIcon))
                 continue;
@@ -130,20 +151,16 @@ public sealed class ThermalVisionOverlay : Overlay
 
         if (_entMan.TryGetComponent<ThermalVisionComponent>(playerEntity, out var comp))
         {
-            _thermalShader?.SetParameter("MinTemp", comp.MinTemperatureThreshold);
+            _thermalShader?.SetParameter("MinTemp", (int)comp.MinTemperatureThreshold);
             _thermalShader?.SetParameter("MinTempColor", comp.MinTemperatureColor);
-            _thermalShader?.SetParameter("MaxTemp", comp.MaxTemperatureThreshold);
+            _thermalShader?.SetParameter("MaxTemp", (int)comp.MaxTemperatureThreshold);
             _thermalShader?.SetParameter("MaxTempColor", comp.MaxTemperatureColor);
         }
 
         _greyscaleShader?.SetParameter("SCREEN_TEXTURE", ScreenTexture);
 
-        var worldHandle = args.WorldHandle;
         var viewport = args.WorldBounds;
-        worldHandle.UseShader(_greyscaleShader);
-        worldHandle.DrawRect(viewport, Color.White);
-        worldHandle.UseShader(_thermalShader);
-        worldHandle.DrawRect(viewport, Color.White);
-        worldHandle.UseShader(null);
+        handle.UseShader(_greyscaleShader);
+        handle.UseShader(_thermalShader);
     }
 }

@@ -1,3 +1,8 @@
+uniform lowp int MinTemp;
+uniform lowp vec3 MinTempColor;
+uniform lowp int MaxTemp;
+uniform lowp vec3 MaxTempColor;
+
 void fragment()
 {
 
