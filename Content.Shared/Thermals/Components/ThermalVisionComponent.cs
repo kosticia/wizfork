@@ -14,4 +14,7 @@ public sealed partial class ThermalVisionComponent : Component
 
     [DataField]
     public Color MaxTemperatureColor = (255, 126, 0);
+
+    [DataField]
+    public Color ScreenColor = Color.Purple;
 }
