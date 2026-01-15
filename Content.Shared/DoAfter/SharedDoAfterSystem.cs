@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Content.Shared.ActionBlocker;
 using Content.Shared.Damage;
 using Content.Shared.Damage.Systems;
+using Content.Shared.Examine;
 using Content.Shared.Hands.Components;
 using Content.Shared.Interaction;
 using Content.Shared.Tag;
@@ -36,6 +37,7 @@ public abstract partial class SharedDoAfterSystem : EntitySystem
         SubscribeLocalEvent<DoAfterComponent, EntityUnpausedEvent>(OnUnpaused);
         SubscribeLocalEvent<DoAfterComponent, ComponentGetState>(OnDoAfterGetState);
         SubscribeLocalEvent<DoAfterComponent, ComponentHandleState>(OnDoAfterHandleState);
+        SubscribeLocalEvent<DoAfterComponent, ExaminedEvent>(OnExamined);
         SubscribeLocalEvent<GetInteractingEntitiesEvent>(OnGetInteractingEntities);
     }
 
@@ -149,6 +151,15 @@ public abstract partial class SharedDoAfterSystem : EntitySystem
                 if (doAfter.Args.Target == args.Target)
                     args.InteractingEntities.Add(doAfter.Args.User);
             }
+        }
+    }
+
+    private void OnExamined(Entity<DoAfterComponent> ent, ref ExaminedEvent args)
+    {
+        foreach (var doafter in ent.Comp.DoAfters)
+        {
+            if (doafter.Value.Args.Description is not null)
+                args.PushMarkup(Loc.GetString("doafter-examine-base", ("entity", ent.Owner), ("type", Loc.GetString(doafter.Value.Args.Description))), -5);
         }
     }
 

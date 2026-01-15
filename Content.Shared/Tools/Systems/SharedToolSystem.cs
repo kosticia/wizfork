@@ -175,7 +175,8 @@ public abstract partial class SharedToolSystem : EntitySystem
             BreakOnMove = true,
             BreakOnWeightlessMove = false,
             NeedHand = tool != user,
-            AttemptFrequency = fuel > 0 ? AttemptFrequency.EveryTick : AttemptFrequency.Never
+            AttemptFrequency = fuel > 0 ? AttemptFrequency.EveryTick : AttemptFrequency.Never,
+            Description = toolComponent.DoAfterDescription,
         };
 
         _doAfterSystem.TryStartDoAfter(doAfterArgs, out id);

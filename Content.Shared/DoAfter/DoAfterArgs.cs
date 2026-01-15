@@ -46,6 +46,12 @@ public sealed partial class DoAfterArgs
     [DataField]
     public bool Hidden;
 
+    /// <summary>
+    /// Whether the progress bar for this DoAfter should be hidden from other players.
+    /// </summary>
+    [DataField]
+    public LocId? Description;
+
     #region Event options
     /// <summary>
     ///     The event that will get raised when the DoAfter has finished. If null, this will simply raise a <see cref="SimpleDoAfterEvent"/>
@@ -264,6 +270,7 @@ public sealed partial class DoAfterArgs
         BlockDuplicate = other.BlockDuplicate;
         CancelDuplicate = other.CancelDuplicate;
         DuplicateCondition = other.DuplicateCondition;
+        Description = other.Description;
 
         // Networked
         NetUser = other.NetUser;

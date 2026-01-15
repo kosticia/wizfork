@@ -20,6 +20,9 @@ public sealed partial class ToolComponent : Component
 
     [DataField]
     public SoundSpecifier? UseSound;
+
+    [DataField]
+    public LocId? DoAfterDescription = "doafter-examine-tool";
 }
 
 /// <summary>
