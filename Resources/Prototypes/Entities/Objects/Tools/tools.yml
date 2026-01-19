@@ -332,7 +332,7 @@
           - RCDGlass
       steel:
         name: power-cell-slot-component-slot-name-default
-        startingItem: SheetGlass10
+        startingItem: SheetSteel10
         whitelist:
           tags:
           - RCDSteel

@@ -3,6 +3,7 @@ using Content.Shared.Charges.Components;
 using Content.Shared.Charges.Systems;
 using Content.Shared.Construction;
 using Content.Shared.Containers;
+using Content.Shared.Containers.ItemSlots;
 using Content.Shared.Database;
 using Content.Shared.DoAfter;
 using Content.Shared.Examine;
@@ -51,6 +52,7 @@ public sealed class RCDSystem : EntitySystem
     [Dependency] private readonly TagSystem _tags = default!;
     [Dependency] private readonly SharedContainerSystem _container = default!;
     [Dependency] private readonly SharedStackSystem _stack = default!;
+    [Dependency] private readonly ItemSlotsSystem _slots = default!;
 
     private readonly int _instantConstructionDelay = 0;
     private readonly EntProtoId _instantConstructionFx = "EffectRCDConstruct0";
@@ -301,8 +303,8 @@ public sealed class RCDSystem : EntitySystem
         _audio.PlayPredicted(component.SuccessSound, uid, args.User);
         foreach (var (mat, amount) in args.Cost)
         {
-            if (_container.TryGetContainer(uid, mat, out var matCont))
-                _stack.ReduceCount(matCont.ContainedEntities[0], amount);
+            if (_slots.TryGetSlot(uid, mat, out var slot) && slot.Item is not null)
+                _stack.ReduceCount(slot.Item.Value, amount);
         }
     }
 
@@ -346,22 +348,25 @@ public sealed class RCDSystem : EntitySystem
 
             if (charges < prototype.Cost.Values.Sum())
             {
-                _popup.PopupClient(Loc.GetString("rcd-component-insufficient-ammo-message"), uid, user);
+                if (popMsgs)
+                    _popup.PopupClient(Loc.GetString("rcd-component-insufficient-ammo-message"), uid, user);
                 return false;
             }
         }
 
         else foreach (var (mat, amount) in prototype.Cost)
         {
-            if (!_container.TryGetContainer(uid, mat, out var matCont))
+            if (!_slots.TryGetSlot(uid, mat, out var slot))
             {
-                _popup.PopupClient(Loc.GetString("rcd-component-insufficient-ammo-message"), uid, user);
+                if (popMsgs)
+                    _popup.PopupClient(Loc.GetString("rcd-component-insufficient-ammo-message"), uid, user);
                 return false;
             }
 
-            if (_stack.GetCount(matCont.ContainedEntities[0]) < amount)
+            if (slot.Item is null || _stack.GetCount(slot.Item.Value) < amount)
             {
-                _popup.PopupClient(Loc.GetString("rcd-component-insufficient-ammo-message"), uid, user);
+                if (popMsgs)
+                    _popup.PopupClient(Loc.GetString("rcd-component-insufficient-ammo-message"), uid, user);
                 return false;
             }
         }
