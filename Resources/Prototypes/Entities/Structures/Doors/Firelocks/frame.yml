@@ -26,7 +26,8 @@
     damageContainer: StructuralInorganic
     damageModifierSet: StructuralMetallicStrong
   - type: RCDDeconstructable
-    cost: 4
+    cost:
+      steel: 4
     delay: 6
     fx: EffectRCDDeconstruct6
   - type: Destructible

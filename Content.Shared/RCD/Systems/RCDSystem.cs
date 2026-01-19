@@ -1,18 +1,23 @@
 using Content.Shared.Administration.Logs;
+using Content.Shared.Charges.Components;
 using Content.Shared.Charges.Systems;
 using Content.Shared.Construction;
+using Content.Shared.Containers;
 using Content.Shared.Database;
 using Content.Shared.DoAfter;
 using Content.Shared.Examine;
 using Content.Shared.Hands.EntitySystems;
 using Content.Shared.Interaction;
 using Content.Shared.Maps;
+using Content.Shared.Materials;
 using Content.Shared.Physics;
 using Content.Shared.Popups;
 using Content.Shared.RCD.Components;
+using Content.Shared.Stacks;
 using Content.Shared.Tag;
 using Content.Shared.Tiles;
 using Robust.Shared.Audio.Systems;
+using Robust.Shared.Containers;
 using Robust.Shared.Map;
 using Robust.Shared.Map.Components;
 using Robust.Shared.Network;
@@ -21,6 +26,7 @@ using Robust.Shared.Physics.Collision.Shapes;
 using Robust.Shared.Physics.Dynamics;
 using Robust.Shared.Prototypes;
 using Robust.Shared.Serialization;
+using System.ComponentModel;
 using System.Linq;
 
 namespace Content.Shared.RCD.Systems;
@@ -43,6 +49,8 @@ public sealed class RCDSystem : EntitySystem
     [Dependency] private readonly SharedMapSystem _mapSystem = default!;
     [Dependency] private readonly SharedTransformSystem _transform = default!;
     [Dependency] private readonly TagSystem _tags = default!;
+    [Dependency] private readonly SharedContainerSystem _container = default!;
+    [Dependency] private readonly SharedStackSystem _stack = default!;
 
     private readonly int _instantConstructionDelay = 0;
     private readonly EntProtoId _instantConstructionFx = "EffectRCDConstruct0";
@@ -291,7 +299,11 @@ public sealed class RCDSystem : EntitySystem
 
         // Play audio and consume charges
         _audio.PlayPredicted(component.SuccessSound, uid, args.User);
-        _sharedCharges.AddCharges(uid, -args.Cost);
+        foreach (var (mat, amount) in args.Cost)
+        {
+            if (_container.TryGetContainer(uid, mat, out var matCont))
+                _stack.ReduceCount(matCont.ContainedEntities[0], amount);
+        }
     }
 
     private void OnRCDconstructionGhostRotationEvent(RCDConstructionGhostRotationEvent ev, EntitySessionEventArgs session)
@@ -321,24 +333,37 @@ public sealed class RCDSystem : EntitySystem
     {
         var prototype = _protoManager.Index(component.ProtoId);
 
-        // Check that the RCD has enough ammo to get the job done
-        var charges = _sharedCharges.GetCurrentCharges(uid);
-
-        // Both of these were messages were suppose to be predicted, but HasInsufficientCharges wasn't being checked on the client for some reason?
-        if (charges == 0)
+        if (TryComp<LimitedChargesComponent>(uid, out var limited))
         {
-            if (popMsgs)
-                _popup.PopupClient(Loc.GetString("rcd-component-no-ammo-message"), uid, user);
+            var charges = _sharedCharges.GetCurrentCharges(uid);
+            if (charges == 0)
+            {
+                if (popMsgs)
+                    _popup.PopupClient(Loc.GetString("rcd-component-no-ammo-message"), uid, user);
 
-            return false;
+                return false;
+            }
+
+            if (charges < prototype.Cost.Values.Sum())
+            {
+                _popup.PopupClient(Loc.GetString("rcd-component-insufficient-ammo-message"), uid, user);
+                return false;
+            }
         }
 
-        if (prototype.Cost > charges)
+        else foreach (var (mat, amount) in prototype.Cost)
         {
-            if (popMsgs)
+            if (!_container.TryGetContainer(uid, mat, out var matCont))
+            {
                 _popup.PopupClient(Loc.GetString("rcd-component-insufficient-ammo-message"), uid, user);
+                return false;
+            }
 
-            return false;
+            if (_stack.GetCount(matCont.ContainedEntities[0]) < amount)
+            {
+                _popup.PopupClient(Loc.GetString("rcd-component-insufficient-ammo-message"), uid, user);
+                return false;
+            }
         }
 
         // Exit if the target / target location is obstructed
@@ -604,14 +629,14 @@ public sealed partial class RCDDoAfterEvent : DoAfterEvent
     public ProtoId<RCDPrototype> StartingProtoId { get; private set; }
 
     [DataField]
-    public int Cost { get; private set; } = 1;
+    public Dictionary<ProtoId<MaterialPrototype>, int> Cost { get; private set; } = [];
 
     [DataField("fx")]
     public NetEntity? Effect { get; private set; }
 
     private RCDDoAfterEvent() { }
 
-    public RCDDoAfterEvent(NetCoordinates location, Direction direction, ProtoId<RCDPrototype> startingProtoId, int cost, NetEntity? effect = null)
+    public RCDDoAfterEvent(NetCoordinates location, Direction direction, ProtoId<RCDPrototype> startingProtoId, Dictionary<ProtoId<MaterialPrototype>, int> cost, NetEntity? effect = null)
     {
         Location = location;
         Direction = direction;

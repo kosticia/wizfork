@@ -57,6 +57,7 @@
         acts: [ "Destruction" ]
   - type: TrayScanReveal
   - type: RCDDeconstructable
-    cost: 2
+    cost:
+      steel: 2
     delay: 2
     fx: EffectRCDDeconstruct2

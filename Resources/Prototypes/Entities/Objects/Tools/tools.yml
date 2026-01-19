@@ -318,8 +318,24 @@
     - HVCable
     - CableTerminal
     - Deconstruct
-  - type: LimitedCharges
-    maxCharges: 30
+  - type: ContainerContainer
+    containers:
+      glass: !type:ContainerSlot
+      steel: !type:ContainerSlot
+  - type: ItemSlots
+    slots:
+      glass:
+        name: power-cell-slot-component-slot-name-default
+        startingItem: SheetGlass10
+        whitelist:
+          tags:
+          - RCDGlass
+      steel:
+        name: power-cell-slot-component-slot-name-default
+        startingItem: SheetGlass10
+        whitelist:
+          tags:
+          - RCDSteel
   - type: Sprite
     sprite: Objects/Tools/rcd.rsi
     state: icon

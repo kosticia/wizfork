@@ -1,3 +1,4 @@
+using Content.Shared.Materials;
 using Content.Shared.RCD.Systems;
 using Robust.Shared.GameStates;
 using Robust.Shared.Prototypes;
@@ -12,10 +13,10 @@ public sealed partial class RCDDeconstructableComponent : Component
     /// Number of charges consumed when the deconstruction is completed
     /// </summary>
     [DataField, ViewVariables(VVAccess.ReadWrite)]
-    public int Cost = 1;
+    public Dictionary<ProtoId<MaterialPrototype>, int> Cost = [];
 
     /// <summary>
-    /// The length of the deconstruction 
+    /// The length of the deconstruction
     /// </summary>
     [DataField, ViewVariables(VVAccess.ReadWrite)]
     public float Delay = 1f;

@@ -46,7 +46,8 @@
     messages: WindowMessages
   - type: Repairable
   - type: RCDDeconstructable
-    cost: 6
+    cost:
+      glass: 6
     delay: 4
     fx: EffectRCDDeconstruct4
   - type: Destructible
@@ -174,7 +175,8 @@
   - type: ExaminableDamage
     messages: WindowMessages
   - type: RCDDeconstructable
-    cost: 4
+    cost:
+      glass: 4
     delay: 2
     fx: EffectRCDDeconstruct2
   - type: Destructible
