@@ -292,8 +292,9 @@
       path: "/Audio/Items/drill_hit.ogg"
 
 - type: entity
-  id: RCD
+  id: BaseRCD
   parent: [ BaseItem, BaseEngineeringContraband ]
+  abstract: true
   name: RCD
   description: The rapid construction device can be used to quickly place and remove various station structures and fixtures. Requires compressed matter to function.
   components:
@@ -318,24 +319,6 @@
     - HVCable
     - CableTerminal
     - Deconstruct
-  - type: ContainerContainer
-    containers:
-      glass: !type:ContainerSlot
-      steel: !type:ContainerSlot
-  - type: ItemSlots
-    slots:
-      glass:
-        name: power-cell-slot-component-slot-name-default
-        startingItem: SheetGlass10
-        whitelist:
-          tags:
-          - RCDGlass
-      steel:
-        name: power-cell-slot-component-slot-name-default
-        startingItem: SheetSteel10
-        whitelist:
-          tags:
-          - RCDSteel
   - type: Sprite
     sprite: Objects/Tools/rcd.rsi
     state: icon
@@ -361,12 +344,49 @@
     key: enum.RcdUiKey.Key
 
 - type: entity
+  id: RCD
+  parent: BaseRCD
+  name: RCD
+  description: The rapid construction device can be used to quickly place and remove various station structures and fixtures. Requires compressed matter to function.
+  components:
+  - type: ContainerContainer
+    containers:
+      glass: !type:ContainerSlot
+      steel: !type:ContainerSlot
+  - type: ItemSlots
+    slots:
+      glass:
+        name: rcd-component-slot-name-glass
+        startingItem: SheetGlass10
+        whitelist:
+          tags:
+          - RCDGlass
+      steel:
+        name: rcd-component-slot-name-steel
+        startingItem: SheetSteel10
+        whitelist:
+          tags:
+          - RCDSteel
+
+- type: entity
   id: RCDEmpty
   parent: RCD
   suffix: Empty
   components:
-  - type: LimitedCharges
-    lastCharges: -1
+  - type: ItemSlots
+    slots:
+      glass:
+        name: power-cell-slot-component-slot-name-default
+        startingItem: null
+        whitelist:
+          tags:
+          - RCDGlass
+      steel:
+        name: power-cell-slot-component-slot-name-default
+        startingItem: null
+        whitelist:
+          tags:
+          - RCDSteel
 
 - type: entity
   id: RCDRecharging

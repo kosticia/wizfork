@@ -145,7 +145,8 @@
   mode: ConstructObject
   prototype: ReinforcedWindow
   cost:
-    glass: 4
+    glass: 3
+    steel: 1
   delay: 3
   collisionMask: Impassable
   rules:
@@ -160,7 +161,8 @@
   mode: ConstructObject
   prototype: WindowReinforcedDirectional
   cost:
-    glass: 3
+    glass: 2
+    steel: 1
   delay: 2
   collisionMask: Impassable
   collisionBounds: "-0.23,-0.49,0.23,-0.36"

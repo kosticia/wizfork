@@ -45,3 +45,7 @@ rcd-component-lighting = Lighting
 rcd-component-deconstruct = deconstruct
 rcd-component-floor-steel = steel tile
 rcd-component-plating = hull plate
+
+### Material slots
+rcd-component-slot-name-steel = steel
+rcd-component-slot-name-glass = glass
